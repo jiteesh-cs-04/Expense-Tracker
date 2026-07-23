@@ -31,15 +31,14 @@ A simple desktop Expense Tracker built using **Python** and **Tkinter** that all
 ## Project Structure
 
 Expense Tracker/
-│
-├── expense.py              # Expense model
-├── expenseManager.py       # Business logic
-├── expensestorage.py       # JSON storage handling
-├── expenseGUI.py           # Main GUI controller
-├── fixed_constants.py      # Categories and constants
-├── database.json           # Expense database (ignored by Git)
-├── .gitignore
-└── README.md
+expense.py              # Expense model
+expenseManager.py       # Business logic
+expensestorage.py       # JSON storage handling
+expenseGUI.py           # Main GUI controller
+fixed_constants.py      # Categories and constants
+database.json           # Expense database (ignored by Git)
+.gitignore
+README.md
 
 
 ##  Architecture
