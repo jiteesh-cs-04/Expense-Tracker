@@ -1,0 +1,11 @@
+Valid_categories=["Food",
+    "Transport",
+    "Shopping",
+    "Entertainment",
+    "Bills",
+    "Health",
+    "Education",
+    "Salary",
+    "Investment",
+    "Others"
+]
