@@ -1,10 +1,10 @@
 class Expense:
-    def __init__(self,expense: dict):
-        self.amount=expense['amount']
-        self.id=expense['id']
-        self.description=expense['description']
-        self.category=expense['category']
-        self.date=expense['date']
+    def __init__(self,id,description,amount,category,date):
+        self.amount=amount
+        self.id=id
+        self.description=description
+        self.category=category
+        self.date=date
     def create_dict(self):
         expense_dict={"id": self.id,
             "amount": self.amount,

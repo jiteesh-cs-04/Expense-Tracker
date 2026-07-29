@@ -26,9 +26,12 @@ class ExpenseGUI:
         self.root.wait_window(expense_popup.popup)
         if expense_popup.data is not None:
             amount, category, description, date = expense_popup.data
-            self.em.add_expense(amount,category,description,date)
-            self.refresh_header()
-            self.expense_treeview.refresh(self.em.expenses)
+            status,reason=self.em.add_expense(amount,category,description,date)
+            if status:
+                self.refresh_header()
+                self.expense_treeview.refresh(self.em.expenses)
+            else:
+                messagebox.showwarning("Error",f"{reason}")
     def edit_expense(self):
         selected_id = self.expense_treeview.tree.selection()
         if selected_id==():
@@ -46,7 +49,7 @@ class ExpenseGUI:
     def delete_expense(self):
         selected_id = self.expense_treeview.tree.selection()
         if selected_id==():
-            messagebox.showwarning(title="Error",text="please select an expense")
+            messagebox.showwarning("Error",message="please select an expense")
             return
         self.em.del_expense(int(selected_id[0]))
         self.refresh_header()
@@ -204,6 +207,10 @@ class Expense_Popup:
         self.category_box_popup.set(category)
         self.desc_popup.insert(0,description)
         self.date_popup.insert(0,date)
+
+class Statistics:
+    def __init__(self):
+        pass
         
 
 

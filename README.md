@@ -12,7 +12,7 @@ A simple desktop Expense Tracker built using **Python** and **Tkinter** that all
 -  Search by:
   - Description (case-insensitive)
   - Category
--  Persistent storage using JSON
+-  Persistent storage using SQLite
 -  Displays:
   - Total expenses
   - Number of expenses
@@ -24,7 +24,7 @@ A simple desktop Expense Tracker built using **Python** and **Tkinter** that all
 
 - Python 3
 - Tkinter
-- JSON
+- SQLite
 - Object-Oriented Programming (OOP)
 
 
@@ -36,7 +36,7 @@ expenseManager.py       # Business logic
 expensestorage.py       # JSON storage handling
 expenseGUI.py           # Main GUI controller
 fixed_constants.py      # Categories and constants
-database.json           # Expense database (ignored by Git)
+exepense.db          # Expense database (ignored by Git)
 .gitignore
 README.md
 
@@ -45,7 +45,7 @@ README.md
 
 The project follows a modular architecture.
 
-ExpenseGUI->ExpenseManage->ExpenseStorage (JSON)
+ExpenseGUI->ExpenseManage->ExpenseStorage (SQlite)
 
 ExpenseGUI:
 Header Section
@@ -61,9 +61,7 @@ Each class has a single responsibility, making the code easier to understand and
 
 ##  Planned Features (Version 2)
 
-- SQLite Database
 - Graphs 
-- Date Validation
 - Expense Sorting
 - Filter by Date Range
 
@@ -76,6 +74,7 @@ This project helped me improve my understanding of:
 - Tkinter GUI Development
 - Event-driven Programming
 - JSON File Handling
+- SQlite database management
 - Software Architecture
 - Git & GitHub
 - Modular Program Design

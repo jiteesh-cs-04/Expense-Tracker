@@ -1,24 +1,22 @@
-import expensestorage as es
+from expense_sql import SQL_DataManager
 from expense import Expense
 from fixed_constants import Valid_categories
+from datetime import datetime
 class ExpenseManager:
     def __init__(self):
-        expenses_data=es.load_database()
-        self.next_id=expenses_data['next_id']
-        self.expenses=[]
-        for expense_dict in expenses_data['expenses']:
-            expense=Expense(expense_dict)
-            self.expenses.append(expense)
+        self.sql_manager=SQL_DataManager()
+        self.expenses=self.sql_manager.get_all_expenses()
+
     def add_expense(self,amount,category,description,date):
         if category in Valid_categories:
             if amount>0:
-                expense_dict={"id":self.next_id,"amount":amount,"category":category,"description":description,"date":date}
-                expense=Expense(expense_dict)
-                self.expenses.append(expense)
-                self.next_id+=1
-                self.save_expenses()
-                
-                return True,"SUCCESS"
+                if self.validate_date(date):
+                    expense_id=self.sql_manager.insert_expenses(description,amount,category,date)
+                    expense=Expense(expense_id,description,amount,category,date)
+                    self.expenses.append(expense)
+                    return True,"SUCCESS"
+                else:
+                    return False,"INVALID_DATE"
             else:
                 return False,"AMOUNT_NEGATIVE"
         else:
@@ -38,7 +36,7 @@ class ExpenseManager:
         expense,status=self.get_expense_by_id(expense_id)
         if status=="SUCCESS":
             self.expenses.remove(expense)
-            self.save_expenses()
+            self.sql_manager.delete_expenses(expense_id)
             return True,"DELETE_SUCCESS"
         else:
             return False,"NOT_FOUND"
@@ -51,9 +49,9 @@ class ExpenseManager:
                 expense.category=category
             if description is not None:
                 expense.description=description
-            if date is not None:
+            if date is not None and self.validate_date(date):
                 expense.date=date
-            self.save_expenses()
+            self.sql_manager.update_expense(expense)
             return True,"EDIT_SUCCESS"
         else:
             return False,"NOT_FOUND"
@@ -83,9 +81,6 @@ class ExpenseManager:
         return list(date_list)
     def get_no_of_expenses(self):
         return len(self.expenses)
-    def save_expenses(self):
-        data={'next_id':self.next_id,'expenses':[i.create_dict() for i in self.expenses]}
-        es.write_database(data)
     def search_by_description_and_category(self,description,category="All"):
         result=[]
         if category=="All":
@@ -97,6 +92,13 @@ class ExpenseManager:
                 if (i.description).lower()==description.lower() or description.lower() in (i.description).lower() and i.category==category:
                     result.append(i)
         return result
+    def validate_date(self,date):
+        try:
+            datetime.strptime(date, "%Y-%m-%d")
+            return True
+        except ValueError:
+            return False
+
    
     
         

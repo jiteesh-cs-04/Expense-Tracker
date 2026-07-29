@@ -1,6 +1,7 @@
 Valid_categories=["Food",
     "Transport",
     "Shopping",
+    "Clothing",
     "Entertainment",
     "Bills",
     "Health",
