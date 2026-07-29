@@ -2,7 +2,7 @@ import sqlite3
 from expense import Expense
 class SQL_DataManager:
     def __init__(self):
-        self.database="expense.db"
+        self.database="expenses.db"
         connection=sqlite3.connect(self.database)
         cursor=connection.cursor()
         query="CREATE TABLE IF NOT EXISTS Expenses(id INTEGER PRIMARY KEY, description TEXT NOT NULL, amount REAL NOT NULL, category TEXT NOT NULL, date TEXT NOT NULL);"
