@@ -17,6 +17,7 @@ A simple desktop Expense Tracker built using **Python** and **Tkinter** that all
   - Total expenses
   - Number of expenses
 -  User-friendly Tkinter GUI with Treeview
+- Bar and pie graphs
 
 ---
 
@@ -25,6 +26,7 @@ A simple desktop Expense Tracker built using **Python** and **Tkinter** that all
 - Python 3
 - Tkinter
 - SQLite
+- matplotlib
 - Object-Oriented Programming (OOP)
 
 
@@ -35,9 +37,11 @@ expense.py              # Expense model
 expenseManager.py       # Business logic
 expensestorage.py       # JSON storage handling
 expenseGUI.py           # Main GUI controller
+expense_statistics.py   # Analytical graphs
 fixed_constants.py      # Categories and constants
-exepense.db          # Expense database (ignored by Git)
+exepense.db             # Expense database (ignored by Git)
 .gitignore
+requirements.txt
 README.md
 
 
@@ -60,10 +64,10 @@ Each class has a single responsibility, making the code easier to understand and
 
 
 ##  Planned Features (Version 2)
-
-- Graphs 
+ 
 - Expense Sorting
 - Filter by Date Range
+- Mini calendar to choose the date instead of typing it manually
 
 
 ##  What I Learned
@@ -75,6 +79,7 @@ This project helped me improve my understanding of:
 - Event-driven Programming
 - JSON File Handling
 - SQlite database management
+- matplotlib
 - Software Architecture
 - Git & GitHub
 - Modular Program Design
