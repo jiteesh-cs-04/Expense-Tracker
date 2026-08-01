@@ -87,6 +87,22 @@ class SQL_DataManager:
         data=cursor.fetchall()
         connection.close()
         return self.create_expense_object(data)
+    def data_for_pie_chart(self):
+        connection = self.connect()
+        cursor = connection.cursor()
+        query="SELECT category, SUM(amount) FROM Expenses GROUP BY category"
+        cursor.execute(query)
+        data=cursor.fetchall()
+        connection.close()
+        return data
+    def data_for_bar_chart(self):
+        connection = self.connect()
+        cursor = connection.cursor()
+        query="SELECT substr(date,1,7), SUM(amount) FROM Expenses GROUP BY substr(date,1,7) ORDER BY substr(date,1,7)"
+        cursor.execute(query)
+        data=cursor.fetchall()
+        connection.close()
+        return data
 
     
 

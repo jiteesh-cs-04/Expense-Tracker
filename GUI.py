@@ -15,6 +15,7 @@ class ExpenseGUI:
         self.search_section=SearchSection(self.root,self)
         self.expense_treeview=Expense_List_Section(self.root)
         self.expense_action=ActionWidgets(self.root,self)
+        
         self.refresh_header()
         self.expense_treeview.refresh(self.em.expenses)
     def refresh_header(self):
@@ -67,6 +68,13 @@ class ExpenseGUI:
         self.expense_treeview.refresh_by_search(search_results)
     def get_existing_category(self):
         return self.em.get_existing_category()
+    def execute_pie_chart(self):
+        self.em.execute_pie_chart()
+    def execute_bar_chart(self):
+        self.em.execute_bar_chart()
+    def Statistics_popup_open(self):
+        self.Statistics_popup=Statistics_Popup(self.root,self)
+        self.root.wait_window(self.Statistics_popup.popup)
     def run(self):
         self.header_section
         self.search_section
@@ -135,9 +143,11 @@ class ActionWidgets:
         self.add_button=tk.Button(parent,text="Add Expense",command=self.controller.add_expense)
         self.edit_button=tk.Button(parent,text="Edit Expense",command=self.controller.edit_expense)
         self.delete_button=tk.Button(parent,text="Delete Expense",command=self.controller.delete_expense)
+        self.statics_button=tk.Button(parent,text="Statistics",command=self.controller.Statistics_popup_open)
         self.add_button.grid(row=5,column=0,padx=5,pady=10)
         self.edit_button.grid(row=5,column=1,padx=5,pady=10)
         self.delete_button.grid(row=5,column=2,padx=5,pady=10)
+        self.statics_button.grid(row=5,column=3,padx=5,pady=10)
         
 
 class Expense_Popup:
@@ -208,9 +218,17 @@ class Expense_Popup:
         self.desc_popup.insert(0,description)
         self.date_popup.insert(0,date)
 
-class Statistics:
-    def __init__(self):
-        pass
+class Statistics_Popup:
+    def __init__(self,parent,controller):
+        self.popup=tk.Toplevel(parent)
+        self.popup.geometry("300x250")
+        self.controller=controller
+        self.title_popup=tk.Label(self.popup,text="Statistics")
+        self.pie_chart_button=tk.Button(self.popup,text="Pie Chart",command=self.controller.execute_pie_chart)
+        self.bar_chart_button=tk.Button(self.popup,text="Bar Chart",command=self.controller.execute_bar_chart)
+        self.title_popup.grid(row=0,column=0,columnspan=2,pady=(10, 20))
+        self.pie_chart_button.grid(row=1,column=0,padx=10,pady=5,sticky="ew")
+        self.bar_chart_button.grid(row=1,column=1,padx=10,pady=5,sticky="ew")
         
 
 

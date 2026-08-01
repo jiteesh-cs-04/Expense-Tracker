@@ -1,7 +1,9 @@
 from expense_sql import SQL_DataManager
 from expense import Expense
 from fixed_constants import Valid_categories
+
 from datetime import datetime
+from expenses_statistics import Statistics
 class ExpenseManager:
     def __init__(self):
         self.sql_manager=SQL_DataManager()
@@ -98,6 +100,16 @@ class ExpenseManager:
             return True
         except ValueError:
             return False
+    def execute_bar_chart(self):
+        data=self.sql_manager.data_for_bar_chart()
+        statistics=Statistics(data)
+        statistics.monthly_bar_chart()
+    def execute_pie_chart(self):
+        data=self.sql_manager.data_for_pie_chart()
+        statistics=Statistics(data)
+        statistics.category_pie_chart()
+
+        
 
    
     
