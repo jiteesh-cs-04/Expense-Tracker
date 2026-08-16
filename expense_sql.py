@@ -103,6 +103,42 @@ class SQL_DataManager:
         data=cursor.fetchall()
         connection.close()
         return data
+    def filter_expenses(self,category=None,description=None,min_amount=None,max_amount=None,min_date=None,max_date=None):
+        connection = self.connect()
+        cursor = connection.cursor()
+        query="SELECT * FROM Expenses WHERE 1=1"
+        values=[]
+        if category:
+            query+=" AND category=?"
+            values.append(category)
+        if description:
+            query+=" AND description LIKE ?"
+            values.append(f"%{description}%")
+        if min_amount is not None and max_amount is not None:
+            query+=" AND amount BETWEEN ? AND ?"
+            values.append(min_amount)
+            values.append(max_amount)
+        elif min_amount is not None:
+            query+=" AND amount >= ?"
+            values.append(min_amount)
+        elif max_amount is not None:
+            query+=" AND amount <= ?"
+            values.append(max_amount)
+        if min_date and max_date:
+            query+=" AND date BETWEEN ? AND ?"
+            values.append(min_date)
+            values.append(max_date)
+        elif min_date:
+            query+=" AND date >= ?"
+            values.append(min_date)
+        elif max_date:
+            query+=" AND date <= ?"
+            values.append(max_date)
+        cursor.execute(query,values)
+        data=cursor.fetchall()
+        connection.close()
+        return self.create_expense_object(data)
+
 
     
 

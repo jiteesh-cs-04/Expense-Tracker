@@ -67,7 +67,7 @@ Each class has a single responsibility, making the code easier to understand and
  
 - Expense Sorting
 - Filter by Date Range
-- Mini calendar to choose the date instead of typing it manually
+- Mini calendar to choose the date instead of typing it manuallygit sta
 
 
 ##  What I Learned

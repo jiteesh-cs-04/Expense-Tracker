@@ -108,7 +108,11 @@ class ExpenseManager:
         data=self.sql_manager.data_for_pie_chart()
         statistics=Statistics(data)
         statistics.category_pie_chart()
-
+    def filter_expenses(self,Entries):
+        category,description,min_amount,max_amount,min_date,max_date=Entries['category'],Entries['description'],Entries['min_amount'],Entries['max_amount'],Entries['min_date'],Entries['max_date']
+        filtered_expenses=self.sql_manager.filter_expenses(category,description,min_amount,max_amount,min_date,max_date)
+        return filtered_expenses
+    
         
 
    

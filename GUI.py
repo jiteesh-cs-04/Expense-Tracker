@@ -7,12 +7,12 @@ from fixed_constants import Valid_categories
 class ExpenseGUI:
     def __init__(self):
         self.root=tk.Tk()
-        self.root.geometry("600x600")
+        self.root.geometry("650x600")
         self.root.resizable(False,False)
         self.root.title("Expense Tracker")
         self.em=ExpenseManager()
         self.header_section=HeaderSection(self.root)
-        self.search_section=SearchSection(self.root,self)
+        self.filter_section=FilterSection(self.root,self)
         self.expense_treeview=Expense_List_Section(self.root)
         self.expense_action=ActionWidgets(self.root,self)
         
@@ -55,17 +55,32 @@ class ExpenseGUI:
         self.em.del_expense(int(selected_id[0]))
         self.refresh_header()
         self.expense_treeview.refresh(self.em.expenses)
-    def clear_search(self):
-        self.search_section.desc_entry.delete(0,tk.END)
-        self.search_section.category_box.set("All")
+    def clear_filter(self):
         self.expense_treeview.refresh(self.em.expenses)
-    def search_expense(self):
-        search_desc=self.search_section.desc_entry.get()
-        search_category=self.search_section.category_box.get()
-        if search_desc=="" and search_category=="All":
-            self.expense_treeview.refresh()
-        search_results=self.em.search_by_description_and_category(description=search_desc,category=search_category)
-        self.expense_treeview.refresh_by_search(search_results)
+    def filter_expenses(self,Entries):
+        
+        if Entries['category']=="All":
+            Entries['category']=None
+        if Entries['description']=="":
+            Entries['description']=None
+        if Entries['min_amount']=="":
+            Entries['min_amount']=None
+        if Entries['max_amount']=="":
+            Entries['max_amount']=None
+        if Entries['min_date']=="":
+            Entries['min_date']=None
+        if Entries['max_date']=="":
+            Entries['max_date']=None
+        filter_results=self.em.filter_expenses(Entries)
+        self.expense_treeview.refresh_by_search(filter_results)
+        
+    def show_filter_frame(self):
+        self.filter_frame=FilterFrame(self.root,self)
+        self.expense_action.filter_button.config(text="Hide Filter",command=self.hide_filter_frame)
+        self.filter_frame.grid(row=3,column=0,columnspan=4,padx=10,pady=10,sticky="nsew")
+    def hide_filter_frame(self):
+        self.filter_frame.grid_forget()
+        self.expense_action.filter_button.config(text="Filter",command=self.show_filter_frame)
     def get_existing_category(self):
         return self.em.get_existing_category()
     def execute_pie_chart(self):
@@ -77,7 +92,7 @@ class ExpenseGUI:
         self.root.wait_window(self.Statistics_popup.popup)
     def run(self):
         self.header_section
-        self.search_section
+        self.filter_section
         self.expense_treeview
         self.expense_action
         self.root.mainloop()
@@ -90,30 +105,25 @@ class HeaderSection:
         self.label_title=tk.Label(parent,text="Expense Tracker")
         self.total_expense=tk.Label(parent,text="Total Expense: $0.00")
         self.no_of_expense=tk.Label(parent,text="Number of Expenses: 0")
-        self.label_title.grid(row=0, column=0, columnspan=2, padx=(150,150),pady=20)
+        self.label_title.grid(row=0, column=0, columnspan=2, padx=(250,150),pady=20)
         self.total_expense.grid(row=1, column=0, sticky="w", padx=10)
-        self.no_of_expense.grid(row=1, column=1, sticky="e", padx=10)
+        self.no_of_expense.grid(row=1, column=2, sticky="e", padx=10)
     def refresh(self,total_expense,no_of_expense):
         self.total_expense.config(text=f"Total Expense: ${total_expense:.2f}")
         self.no_of_expense.config(text=f"Number of Expenses: {no_of_expense}")
     
-class SearchSection:
+class FilterSection:
     def __init__(self,parent,controller):
-        self.controller=controller
-        self.desc_name=tk.Label(parent,text="description:")
+        self.controller=controller 
         self.desc_entry=tk.Entry(parent)
-        self.search_button=tk.Button(parent,text="Search",command=self.controller.search_expense)
-        self.clear_button=tk.Button(parent,text="Clear",command=self.controller.clear_search)
-        self.cat_name=tk.Label(parent,text="category:")
+        self.max_amount_entry=tk.Entry(parent)
+        self.min_amount_entry=tk.Entry(parent)
+        self.max_date_entry=tk.Entry(parent)
+        self.min_date_entry=tk.Entry(parent)
         self.category_box=ttk.Combobox(parent,state="readonly")
         self.category_box.set("All")
         self.category_box['values']=["All"]+self.controller.get_existing_category()
-        self.desc_name.grid(row=2, column=0, padx=10, pady=(10, 2), sticky="w")
-        self.cat_name.grid(row=2, column=1, padx=10, pady=(10, 2), sticky="w")
-        self.desc_entry.grid(row=3, column=0, padx=10, pady=(0, 10), sticky="ew")
-        self.category_box.grid(row=3, column=1, padx=10, pady=(0, 10), sticky="ew")
-        self.search_button.grid(row=3, column=2, padx=(20, 5), pady=(0, 10))
-        self.clear_button.grid(row=3, column=3, padx=(5, 10), pady=(0, 10))
+        
     
     
 class Expense_List_Section:
@@ -144,10 +154,12 @@ class ActionWidgets:
         self.edit_button=tk.Button(parent,text="Edit Expense",command=self.controller.edit_expense)
         self.delete_button=tk.Button(parent,text="Delete Expense",command=self.controller.delete_expense)
         self.statics_button=tk.Button(parent,text="Statistics",command=self.controller.Statistics_popup_open)
-        self.add_button.grid(row=5,column=0,padx=5,pady=10)
-        self.edit_button.grid(row=5,column=1,padx=5,pady=10)
-        self.delete_button.grid(row=5,column=2,padx=5,pady=10)
-        self.statics_button.grid(row=5,column=3,padx=5,pady=10)
+        self.filter_button=tk.Button(parent,text="Filter",command=self.controller.show_filter_frame)
+        self.add_button.grid(row=5,column=0,padx=5,pady=10,sticky="ew")
+        self.edit_button.grid(row=5,column=1,padx=5,pady=10,sticky="ew")
+        self.delete_button.grid(row=5,column=2,padx=5,pady=10,sticky="ew")
+        self.statics_button.grid(row=6,column=0,padx=5,pady=10,sticky="ew")
+        self.filter_button.grid(row=6,column=1,padx=5,pady=10,sticky="ew")
         
 
 class Expense_Popup:
@@ -221,19 +233,68 @@ class Expense_Popup:
 class Statistics_Popup:
     def __init__(self,parent,controller):
         self.popup=tk.Toplevel(parent)
-        self.popup.geometry("300x250")
+        self.popup.geometry("250x250")
         self.controller=controller
         self.title_popup=tk.Label(self.popup,text="Statistics")
         self.pie_chart_button=tk.Button(self.popup,text="Pie Chart",command=self.controller.execute_pie_chart)
         self.bar_chart_button=tk.Button(self.popup,text="Bar Chart",command=self.controller.execute_bar_chart)
         self.title_popup.grid(row=0,column=0,columnspan=2,pady=(10, 20))
-        self.pie_chart_button.grid(row=1,column=0,padx=10,pady=5,sticky="ew")
-        self.bar_chart_button.grid(row=1,column=1,padx=10,pady=5,sticky="ew")
+        self.pie_chart_button.grid(row=1,column=0,padx=20,pady=10,sticky="w")
+        self.bar_chart_button.grid(row=1,column=1,padx=20,pady=10,sticky="e")
+
+class FilterFrame(tk.Frame):
+    def __init__(self,parent,controller):
+        super().__init__(parent)
+        self.controller=controller
+        self.entries_frame=FilterSection(self,controller)
+        self.desc_name=tk.Label(self,text="Description:")
+        self.cat_name=tk.Label(self,text="Category:")
+        self.max_amount_name=tk.Label(self,text="Max Amount:")
+        self.min_amount_name=tk.Label(self,text="Min Amount:")
+        self.max_date_name=tk.Label(self,text="Max Date:")
+        self.min_date_name=tk.Label(self,text="Min Date:")
+        self.desc_name.grid(row=1, column=0, padx=10, pady=(10, 2), sticky="w")
+        self.entries_frame.desc_entry.grid(row=1, column=1, padx=10, pady=(0, 10), sticky="ew")
+        self.cat_name.grid(row=1, column=2, padx=10, pady=(10, 2), sticky="w")
+        self.entries_frame.category_box.grid(row=1, column=3, padx=10, pady=(0, 10), sticky="ew")
+        self.max_amount_name.grid(row=2, column=2, padx=10, pady=(10, 2), sticky="w")
+        self.entries_frame.max_amount_entry.grid(row=2, column=3, padx=10, pady=(0, 10), sticky="ew")
+        self.min_amount_name.grid(row=2, column=0, padx=10, pady=(10, 2), sticky="w")
+        self.entries_frame.min_amount_entry.grid(row=2, column=1, padx=10, pady=(0, 10), sticky="ew")
+        self.max_date_name.grid(row=3, column=2, padx=10, pady=(10, 2), sticky="w")
+        self.entries_frame.max_date_entry.grid(row=3, column=3, padx=10, pady=(0, 10), sticky="ew")
+        self.min_date_name.grid(row=3, column=0, padx=10, pady=(10, 2), sticky="w")
+        self.entries_frame.min_date_entry.grid(row=3, column=1, padx=10, pady=(0, 10), sticky="ew")
+        self.filter_button=tk.Button(self,text="Apply Filter",command=self.apply_filter)
+        self.clear_filter_button=tk.Button(self,text="Clear Filter",command=self.clear_filter_clicked)
+        self.clear_filter_button.grid(row=4, column=2, padx=5, pady=10)
+        self.filter_button.grid(row=4, column=3, padx=5, pady=10)
+    def apply_filter(self):
+        category=self.entries_frame.category_box.get()
+        description=self.entries_frame.desc_entry.get()
+        min_amount=self.entries_frame.min_amount_entry.get()
+        max_amount=self.entries_frame.max_amount_entry.get()
+        min_date=self.entries_frame.min_date_entry.get()
+        max_date=self.entries_frame.max_date_entry.get()
+        Entries={
+            'category':category,
+            'description':description,
+            'min_amount':min_amount,
+            'max_amount':max_amount,
+            'min_date':min_date,
+            'max_date':max_date
+        }
+        self.controller.filter_expenses(Entries)
+
         
-
-
-
-
+    def clear_filter_clicked(self):
+        self.entries_frame.desc_entry.delete(0,tk.END)
+        self.entries_frame.category_box.set("All")
+        self.entries_frame.max_amount_entry.delete(0,tk.END)
+        self.entries_frame.min_amount_entry.delete(0,tk.END)
+        self.entries_frame.max_date_entry.delete(0,tk.END)
+        self.entries_frame.min_date_entry.delete(0,tk.END)
+        self.controller.clear_filter()
 
 
 
