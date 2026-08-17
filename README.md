@@ -65,9 +65,9 @@ Each class has a single responsibility, making the code easier to understand and
 
 ##  Planned Features (Version 2)
  
-- Expense Sorting
+
 - Filter by Date Range
-- Mini calendar to choose the date instead of typing it manuallygit sta
+- Mini calendar to choose the date instead of typing it manually
 
 
 ##  What I Learned

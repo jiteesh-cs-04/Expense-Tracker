@@ -15,7 +15,7 @@ class ExpenseGUI:
         self.filter_section=FilterSection(self.root,self)
         self.expense_treeview=Expense_List_Section(self.root)
         self.expense_action=ActionWidgets(self.root,self)
-        
+        self.filter_active=None
         self.refresh_header()
         self.expense_treeview.refresh(self.em.expenses)
     def refresh_header(self):
@@ -30,7 +30,7 @@ class ExpenseGUI:
             status,reason=self.em.add_expense(amount,category,description,date)
             if status:
                 self.refresh_header()
-                self.expense_treeview.refresh(self.em.expenses)
+                self.refresh_expense_view()
             else:
                 messagebox.showwarning("Error",f"{reason}")
     def edit_expense(self):
@@ -46,7 +46,7 @@ class ExpenseGUI:
             amount, category, description, date = expense_popup.data
             self.em.edit_expense(int(selected_id[0]),amount,category,description,date)
             self.refresh_header()
-            self.expense_treeview.refresh(self.em.expenses)
+            self.refresh_expense_view()
     def delete_expense(self):
         selected_id = self.expense_treeview.tree.selection()
         if selected_id==():
@@ -54,10 +54,12 @@ class ExpenseGUI:
             return
         self.em.del_expense(int(selected_id[0]))
         self.refresh_header()
-        self.expense_treeview.refresh(self.em.expenses)
+        self.refresh_expense_view()
     def clear_filter(self):
         self.expense_treeview.refresh(self.em.expenses)
+        self.filter_active=None
     def filter_expenses(self,Entries):
+        self.filter_active=Entries
         
         if Entries['category']=="All":
             Entries['category']=None
@@ -73,6 +75,7 @@ class ExpenseGUI:
             Entries['max_date']=None
         filter_results=self.em.filter_expenses(Entries)
         self.expense_treeview.refresh_by_search(filter_results)
+        return filter_results
         
     def show_filter_frame(self):
         self.filter_frame=FilterFrame(self.root,self)
@@ -83,6 +86,14 @@ class ExpenseGUI:
         self.expense_action.filter_button.config(text="Filter",command=self.show_filter_frame)
     def get_existing_category(self):
         return self.em.get_existing_category()
+    def refresh_expense_view(self):
+        if self.filter_active is not None:
+            filter_results=self.filter_expenses(self.filter_active)
+            self.expense_treeview.refresh_by_search(filter_results)
+        else:
+            self.expense_treeview.refresh(self.em.expenses)
+
+
     def execute_pie_chart(self):
         self.em.execute_pie_chart()
     def execute_bar_chart(self):
@@ -285,6 +296,7 @@ class FilterFrame(tk.Frame):
             'max_date':max_date
         }
         self.controller.filter_expenses(Entries)
+        
 
         
     def clear_filter_clicked(self):
