@@ -3,7 +3,7 @@ from expense import Expense
 from fixed_constants import Valid_categories
 
 from datetime import datetime
-from expenses_statistics import Statistics
+'''from expenses_statistics import Statistics'''
 class ExpenseManager:
     def __init__(self):
         self.sql_manager=SQL_DataManager()
@@ -91,7 +91,7 @@ class ExpenseManager:
                     result.append(i)
         else:
             for i in self.expenses:
-                if (i.description).lower()==description.lower() or description.lower() in (i.description).lower() and i.category==category:
+                if ((i.description).lower()==description.lower() or description.lower() in (i.description).lower()) and i.category==category:
                     result.append(i)
         return result
     def validate_date(self,date):
@@ -101,13 +101,15 @@ class ExpenseManager:
         except ValueError:
             return False
     def execute_bar_chart(self):
-        data=self.sql_manager.data_for_bar_chart()
-        statistics=Statistics(data)
-        statistics.monthly_bar_chart()
+        pass
+        #data=self.sql_manager.data_for_bar_chart()
+        #statistics=Statistics(data)
+        #statistics.monthly_bar_chart()
     def execute_pie_chart(self):
-        data=self.sql_manager.data_for_pie_chart()
-        statistics=Statistics(data)
-        statistics.category_pie_chart()
+        pass
+        #data=self.sql_manager.data_for_pie_chart()
+        #statistics=Statistics(data)
+        #statistics.category_pie_chart()
     def filter_expenses(self,Entries):
         category,description,min_amount,max_amount,min_date,max_date=Entries['category'],Entries['description'],Entries['min_amount'],Entries['max_amount'],Entries['min_date'],Entries['max_date']
         filtered_expenses=self.sql_manager.filter_expenses(category,description,min_amount,max_amount,min_date,max_date)

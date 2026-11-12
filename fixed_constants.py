@@ -6,7 +6,6 @@ Valid_categories=["Food",
     "Bills",
     "Health",
     "Education",
-    "Salary",
     "Investment",
     "Others"
 ]
